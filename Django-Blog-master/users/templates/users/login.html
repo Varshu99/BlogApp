@@ -1,59 +1,60 @@
 {% extends "blog/base.html" %}
-{% block title %} Library | Sign in {% endblock %}
-
 {% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm mt-5">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">🔐 Log In</h3>
+                <form method="POST">
+                    {% csrf_token %}
 
-<center>
-   <h4 class="display-6 text-white"><b><i>Login To Library</i></b></h4>
-   <hr>
-</center>
-<!-- Container for the login form -->
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="card shadow-lg p-4" style="max-width: 500px; width: 100%; background: rgb(212, 209, 209); border-radius: 10px;">
-        <div class="card-body">
-            <!-- Display error messages if any -->
-            {% for message in messages %}
-            <div class="alert alert-danger" role="alert">
-                {{ message }}
+                    <!-- Username -->
+                    <div class="form-group mb-3">
+                        <label for="{{ form.username.id_for_label }}">Username</label>
+                        <input 
+                            type="text" 
+                            name="{{ form.username.name }}" 
+                            id="{{ form.username.id_for_label }}" 
+                            value="{{ form.username.value|default_if_none:'' }}" 
+                            class="form-control" 
+                            required
+                        >
+                        {% for error in form.username.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group mb-3">
+                        <label for="{{ form.password.id_for_label }}">Password</label>
+                        <input 
+                            type="password" 
+                            name="{{ form.password.name }}" 
+                            id="{{ form.password.id_for_label }}" 
+                            class="form-control" 
+                            required
+                        >
+                        {% for error in form.password.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-group text-center">
+                        <button class="btn btn-primary w-100" type="submit">Login</button>
+                        <small class="text-muted d-block mt-2">
+                            <a href="#">Forgot Password?</a>
+                        </small>
+                    </div>
+                </form>
+
+                <div class="border-top pt-3 text-center mt-4">
+                    <small class="text-muted">
+                        Need an account? <a href="{% url 'register' %}">Sign up now</a>
+                    </small>
+                </div>
             </div>
-            {% endfor %}
-            <form action="{% url 'login' %}" method="POST">
-                {% csrf_token %}
-                
-                <!-- Username Field -->
-                <div class="mb-3">
-                    <label for="username" class="form-label" style="color: black;"><b>Username</b></label>
-                    <input type="text" name="username" id="username" class="form-control" placeholder="Enter your username" required>
-                </div>
-                
-                <!-- Password Field -->
-                <div class="mb-3">
-                    <label for="password" class="form-label" style="color: black;"><b>Password</b></label>
-                    <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required>
-                </div>
-                
-                <!-- Submit Button -->
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary btn-lg" style="background: linear-gradient(90deg, #56ccf2, #2f80ed); border: none;">Login</button>
-                    <br>
-
-                </div>
-                
-                <br>
-                <!-- Forgot password & Google login -->
-                <div class="d-flex justify-content-between align-items-center">
-                    <a href="{% url 'register' %}" class="text-dark">Don't have an account? Register here</a>
-
-                </div>
-                
-                <br>
-                <!-- Register link -->
-                <!-- <center>
-                    <a href="{% url 'register' %}" class="text-dark">Don't have an account? Register here</a>
-                </center> -->
-            </form>
         </div>
     </div>
 </div>
-
 {% endblock content %}

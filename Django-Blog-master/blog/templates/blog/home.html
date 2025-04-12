@@ -1,37 +1,211 @@
 {% extends "blog/base.html" %}
+
 {% block content %}
-    {% for post in posts %}
-        <article class="media content-section">
-          <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
-              <small class="text-muted">{{ post.date_posted }}</small>
-            </div>
-            <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
-            <p class="article-content">{{ post.content }}</p>
+<div class="row">
+  {% for post in posts %}
+      <div class="col-md-4 col-sm-6 mb-4">
+          <div class="card shadow-sm">
+              <img src="{{ post.author.profile.image.url }}" class="card-img-top rounded-circle article-img" alt="{{ post.author }}'s profile image">
+              <div class="card-body">
+                  <div class="article-metadata mb-3">
+                      <a class="author-name" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
+                      <small class="text-muted">{{ post.date_posted }}</small>
+                  </div>
+                  <h5 class="card-title"><a href="{% url 'post-detail' post.id %}" class="article-title">{{ post.title }}</a></h5>
+                  <p class="card-text article-content">{{ post.content|truncatewords:40 }}</p>
+                  <a href="{% url 'post-detail' post.id %}" class="btn btn-info btn-sm">Read More</a>
+              </div>
           </div>
-        </article>
-    {% endfor %}
+      </div>
+  {% endfor %}
+</div>
+
+   
+<style>
+  /* Container for the card layout */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* Each individual card */
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Hover effect: lift the card */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Enhanced shadow on hover */
+}
+
+/* Profile image */
+.card-img-top {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin: 20px auto;
+}
+
+/* Metadata section */
+.article-metadata {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.author-name {
+    font-weight: bold;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.author-name:hover {
+    color: #0056b3;
+}
+
+/* Title of the post */
+.card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    transition: color 0.3s ease;
+}
+
+.card-title:hover {
+    color: #007bff;
+}
+
+/* Post content preview */
+.card-text {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    text-align: justify;
+}
+
+/* Read More Button */
+.btn-info {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-info:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+/* Styling for card text content */
+.article-content {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    text-align: justify;
+    
+    /* Fixed height */
+    height: 100px; /* You can adjust the height based on your design */
+    overflow: hidden; /* Hide overflow content */
+    text-overflow: ellipsis; /* Adds '...' at the end if the content is too long */
+}
+
+/* Optional: Add a hover effect to show full content */
+.card-text:hover {
+    height: auto; /* On hover, reveal full content */
+    overflow: visible; /* Show full content */
+    white-space: normal; /* Allow text to wrap */
+}
+
+/* Responsive Design for Mobile Devices */
+@media (max-width: 768px) {
+    .col-md-4 {
+        flex: 1 1 100%;
+    }
+    .card-img-top {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+</style>
+
+
+
     {% if is_paginated %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span> <!-- Double left arrow -->
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span> <!-- Single left arrow -->
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&laquo;&laquo;</span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                    </li>
+                {% endif %}
 
-      {% if page_obj.has_previous %}
-        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-      {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
 
-      {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
-        {% endif %}
-      {% endfor %}
-
-      {% if page_obj.has_next %}
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-      {% endif %}
-
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span> <!-- Right arrow -->
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span> <!-- Double right arrow -->
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&raquo;&raquo;</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
     {% endif %}
 {% endblock content %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const paginationLinks = document.querySelectorAll('.pagination a');
+      
+      paginationLinks.forEach(link => {
+          link.addEventListener('click', function(event) {
+              event.preventDefault(); // Prevent the default link behavior
+              const pageNumber = new URL(this.href).searchParams.get('page');
+              
+              // Example: You can make an AJAX call here to get the posts for that page.
+              window.location.href = `?page=${pageNumber}`; // This reloads the page with the correct page number
+          });
+      });
+  });
+</script>

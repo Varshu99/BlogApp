@@ -1,38 +1,107 @@
 {% extends "blog/base.html" %}
+
 {% block content %}
-    <h1 class="mb-3">Posts by {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h1>
+  <h1 class="mb-4 text-primary">Posts by {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h1>
+
+  <div class="row">
     {% for post in posts %}
-        <article class="media content-section">
-          <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
-          <div class="media-body">
-            <div class="article-metadata">
-              <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
+      <div class="col-md-4 col-sm-6 mb-4">
+        <div class="card h-100 shadow-sm post-card">
+          <div class="text-center mt-3">
+            <img class="rounded-circle card-img-top-profile" src="{{ post.author.profile.image.url }}" alt="{{ post.author }}">
+          </div>
+          <div class="card-body">
+            <div class="article-metadata mb-2 text-center">
+              <a class="author-name d-block mb-1" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
               <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
             </div>
-            <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
-            <p class="article-content">{{ post.content }}</p>
+            <h5 class="card-title text-center">
+              <a class="text-decoration-none text-dark" href="{% url 'post-detail' post.id %}">{{ post.title }}</a>
+            </h5>
+            <p class="card-text article-content">{{ post.content|truncatewords:30 }}</p>
           </div>
-        </article>
+          <div class="card-footer text-center bg-white border-0">
+            <a href="{% url 'post-detail' post.id %}" class="btn btn-outline-primary btn-sm">Read More</a>
+          </div>
+        </div>
+      </div>
     {% endfor %}
-    {% if is_paginated %}
+  </div>
 
-      {% if page_obj.has_previous %}
-        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-      {% endif %}
-
-      {% for num in page_obj.paginator.page_range %}
-        {% if page_obj.number == num %}
-          <a class="btn btn-info mb-4" href="?page={{ num }}">{{ num }}</a>
-        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-          <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+  <!-- Pagination -->
+  {% if is_paginated %}
+    <nav>
+      <ul class="pagination justify-content-center mt-4">
+        {% if page_obj.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page=1">« First</a></li>
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">‹ Prev</a></li>
         {% endif %}
-      {% endfor %}
 
-      {% if page_obj.has_next %}
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-        <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-      {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+          {% endif %}
+        {% endfor %}
 
-    {% endif %}
+        {% if page_obj.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next ›</a></li>
+          <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last »</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+
+<style>
+  /* Blog Post Card Styles */
+.post-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 10px;
+}
+
+.post-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile Image */
+.card-img-top-profile {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #007bff;
+  margin: 0 auto;
+}
+
+/* Article Content */
+.article-content {
+  height: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+  font-size: 0.95rem;
+  text-align: justify;
+}
+
+/* Author Metadata */
+.author-name {
+  font-weight: 600;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.author-name:hover {
+  text-decoration: underline;
+}
+
+/* Pagination */
+.pagination .page-item.active .page-link {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+</style>
+
 {% endblock content %}

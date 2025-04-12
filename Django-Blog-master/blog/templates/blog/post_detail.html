@@ -1,20 +1,35 @@
 {% extends "blog/base.html" %}
+
 {% block content %}
-  <article class="media content-section">
-    <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }}">
-    <div class="media-body">
-      <div class="article-metadata">
-        <a class="mr-2" href="{% url 'user-posts' object.author.username %}">{{ object.author }}</a>
-        <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
-        {% if object.author == user %}
-          <div>
-            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Update</a>
-            <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete</a>
-          </div>
-        {% endif %}
+  <div class="card shadow-sm mb-4">
+    <div class="row g-0">
+      <!-- Post Author Image -->
+      <div class="col-md-4">
+        <img class="card-img-top rounded-circle" src="{{ object.author.profile.image.url }}" alt="{{ object.author }}'s Profile Image">
       </div>
-      <h2 class="article-title">{{ object.title }}</h2>
-      <p class="article-content">{{ object.content }}</p>
+      
+      <!-- Post Content -->
+      <div class="col-md-8">
+        <div class="card-body">
+          <!-- Metadata (Author, Date, Edit/Delete buttons) -->
+          <div class="article-metadata mb-3">
+            <a class="mr-2 text-decoration-none" href="{% url 'user-posts' object.author.username %}">{{ object.author }}</a>
+            <small class="text-muted">{{ object.date_posted|date:"F d, Y" }}</small>
+            {% if object.author == user %}
+              <div class="mt-2">
+                <a class="btn btn-secondary btn-sm" href="{% url 'post-update' object.id %}">Update</a>
+                <a class="btn btn-danger btn-sm" href="{% url 'post-delete' object.id %}">Delete</a>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Post Title -->
+          <h2 class="card-title">{{ object.title }}</h2>
+          
+          <!-- Post Content -->
+          <p class="card-text article-content">{{ object.content }}</p>
+        </div>
+      </div>
     </div>
-  </article>
+  </div>
 {% endblock content %}
