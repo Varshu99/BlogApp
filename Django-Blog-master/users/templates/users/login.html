@@ -1,24 +1,59 @@
 {% extends "blog/base.html" %}
-{% load crispy_forms_tags %}
+{% block title %} Library | Sign in {% endblock %}
+
 {% block content %}
-    <div class="content-section">
-        <form method="POST">
-            {% csrf_token %}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Log In</legend>
-                {{ form }}
-            </fieldset>
-            <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Login</button>
-                <small class="text-muted ml-2">
-                    <a href="#">Forgot Password?</a>
-                </small>
+
+<center>
+   <h4 class="display-6 text-white"><b><i>Login To Library</i></b></h4>
+   <hr>
+</center>
+<!-- Container for the login form -->
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg p-4" style="max-width: 500px; width: 100%; background: rgb(212, 209, 209); border-radius: 10px;">
+        <div class="card-body">
+            <!-- Display error messages if any -->
+            {% for message in messages %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
             </div>
-        </form>
-        <div class="border-top pt-3">
-            <small class="text-muted">
-                Need An Account? <a class="ml-2" href="{% url 'register' %}">Sign Up Now</a>
-            </small>
+            {% endfor %}
+            <form action="{% url 'login' %}" method="POST">
+                {% csrf_token %}
+                
+                <!-- Username Field -->
+                <div class="mb-3">
+                    <label for="username" class="form-label" style="color: black;"><b>Username</b></label>
+                    <input type="text" name="username" id="username" class="form-control" placeholder="Enter your username" required>
+                </div>
+                
+                <!-- Password Field -->
+                <div class="mb-3">
+                    <label for="password" class="form-label" style="color: black;"><b>Password</b></label>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg" style="background: linear-gradient(90deg, #56ccf2, #2f80ed); border: none;">Login</button>
+                    <br>
+
+                </div>
+                
+                <br>
+                <!-- Forgot password & Google login -->
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{% url 'register' %}" class="text-dark">Don't have an account? Register here</a>
+
+                </div>
+                
+                <br>
+                <!-- Register link -->
+                <!-- <center>
+                    <a href="{% url 'register' %}" class="text-dark">Don't have an account? Register here</a>
+                </center> -->
+            </form>
         </div>
     </div>
+</div>
+
 {% endblock content %}
